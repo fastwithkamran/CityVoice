@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, addDoc, doc, updateDoc, increment, query, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
+import logoUrl from "./CityVoice logo.png";
 
 const CATEGORIES = [
   { id: "transport", label: "Transportation", icon: "🚌" },
@@ -91,7 +92,7 @@ function IdeaCard({ idea, onUpvote, hasVoted }) {
     onUpvote(idea.id);
   }
   return (
-    <div style={{
+    <div className="idea-card" style={{
       background: "rgba(20,32,48,0.85)",
       border: "1px solid rgba(255,255,255,0.07)",
       borderRadius: 16,
@@ -104,7 +105,7 @@ function IdeaCard({ idea, onUpvote, hasVoted }) {
       onMouseLeave={e => e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)"}
     >
       {/* Vote */}
-      <button onClick={handleVote} style={{
+      <button onClick={handleVote} className="vote-btn" style={{
         display: "flex", flexDirection: "column", alignItems: "center",
         gap: 4, background: hasVoted ? "rgba(52,199,120,0.15)" : "rgba(255,255,255,0.04)",
         border: hasVoted ? "1px solid rgba(52,199,120,0.4)" : "1px solid rgba(255,255,255,0.08)",
@@ -151,10 +152,7 @@ function StatsBar({ ideas }) {
   const totalVotes = ideas.reduce((s, i) => s + i.votes, 0);
 
   return (
-    <div style={{
-      display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 12,
-      marginBottom: 28,
-    }}>
+    <div className="stats-grid">
       {[
         { label: "Total Submissions", value: total, icon: "📋", color: "#a0b4c8" },
         { label: "Total Votes", value: totalVotes, icon: "▲", color: "#34c778" },
@@ -206,15 +204,9 @@ function SubmitForm({ onSubmit, onClose }) {
     <div style={{
       position: "fixed", inset: 0, background: "rgba(5,12,22,0.92)",
       display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 1000, padding: 20, backdropFilter: "blur(8px)",
+      zIndex: 1000, padding: "16px", backdropFilter: "blur(8px)",
     }} onClick={e => e.target === e.currentTarget && onClose()}>
-      <div style={{
-        background: "#0f1e2e", border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 24, padding: 36, width: "100%", maxWidth: 540,
-        maxHeight: "90vh", overflowY: "auto",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-        animation: "slideUp 0.3s ease",
-      }}>
+      <div className="form-modal-inner">
         {submitted ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
             <div style={{
@@ -238,7 +230,7 @@ function SubmitForm({ onSubmit, onClose }) {
 
             {/* Step indicator */}
             <div style={{ display: "flex", gap: 8, marginBottom: 28 }}>
-              {[1,2].map(s => (
+              {[1, 2].map(s => (
                 <div key={s} style={{
                   flex: 1, height: 4, borderRadius: 2,
                   background: s <= step ? "#34c778" : "rgba(255,255,255,0.08)",
@@ -317,7 +309,7 @@ function SubmitForm({ onSubmit, onClose }) {
                     onBlur={e => e.target.style.borderColor = "rgba(255,255,255,0.1)"}
                   />
                 </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div className="name-neighborhood-grid">
                   <div>
                     <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "#7a93ab", letterSpacing: "1px", textTransform: "uppercase", marginBottom: 8 }}>Your Name</label>
                     <input value={form.name} onChange={e => set("name", e.target.value)}
@@ -389,7 +381,7 @@ export default function App() {
       const { id, ...ideaData } = idea;
       const docRef = await addDoc(collection(db, "ideas"), ideaData);
       const newIdea = { ...ideaData, id: docRef.id };
-      
+
       setIdeas([newIdea, ...ideas]);
       showToast("🎉 Submission live on the board!");
     } catch (error) {
@@ -447,6 +439,65 @@ export default function App() {
         @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes toastIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes fabPulse { 0%, 100% { box-shadow: 0 6px 24px rgba(52,199,120,0.35); } 50% { box-shadow: 0 6px 32px rgba(52,199,120,0.55); } }
+
+        /* ── BASE CLASSES ──────────────────────────── */
+        .header-inner { max-width: 1320px; margin: 0 auto; padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .header-subtitle { display: block; }
+        .header-submit-btn { display: flex; }
+        .submit-btn-label { display: inline; }
+        .mobile-fab { display: none !important; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-modal-inner { background: #0f1e2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 36px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.6); animation: slideUp 0.3s ease; }
+        .name-neighborhood-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .main-padding { max-width: 1320px; margin: 0 auto; padding: 32px 32px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 28px; }
+        .filter-select { background: rgba(10,20,32,0.8); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 8px 12px; color: #eef2f7; font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; cursor: pointer; flex: 1 1 auto; min-width: 0; }
+        .export-row { display: flex; gap: 12px; align-items: center; }
+        .export-cat-tag { display: inline-flex; }
+
+        /* ── TABLET ≤768px ─────────────────────────── */
+        @media (max-width: 768px) {
+          .header-inner { padding: 0 16px; height: 58px; gap: 10px; }
+          .dashboard-grid { grid-template-columns: 1fr; }
+          .main-padding { padding: 24px 16px; }
+          .stats-grid { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; }
+        }
+
+        /* ── MOBILE ≤640px ─────────────────────────── */
+        @media (max-width: 640px) {
+          .header-inner { padding: 0 14px; height: 56px; gap: 8px; }
+          .header-subtitle { display: none; }
+          .header-submit-btn { display: none !important; }
+          .submit-btn-label { display: none; }
+          .mobile-fab { display: flex !important; }
+          .form-modal-inner { padding: 24px 18px; border-radius: 18px; }
+          .name-neighborhood-grid { grid-template-columns: 1fr; }
+          .main-padding { padding: 20px 12px; padding-bottom: 90px; }
+          .stats-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 20px; }
+          .filters-bar { flex-direction: column !important; gap: 8px !important; }
+          .filter-select { width: 100%; flex: unset; }
+          .export-row { flex-wrap: wrap; gap: 8px; }
+          .export-cat-tag { display: none; }
+        }
+
+        /* ── SMALL MOBILE ≤480px ───────────────────── */
+        @media (max-width: 480px) {
+          .header-inner { height: 52px; padding: 0 12px; }
+          .idea-card { padding: 14px !important; gap: 10px !important; }
+          .vote-btn { padding: 8px 10px !important; min-width: 44px !important; }
+          .filters-bar { padding: 10px !important; border-radius: 10px !important; }
+          .form-modal-inner { padding: 20px 14px; border-radius: 14px; }
+          .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+          .main-padding { padding: 16px 10px; padding-bottom: 90px; }
+        }
+
+        /* ── VERY SMALL ≤360px ─────────────────────── */
+        @media (max-width: 360px) {
+          .stats-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+          .idea-card { padding: 12px !important; gap: 8px !important; border-radius: 12px !important; }
+          .vote-btn { padding: 6px 8px !important; min-width: 40px !important; border-radius: 8px !important; }
+        }
       `}</style>
 
       {/* TOAST */}
@@ -469,50 +520,62 @@ export default function App() {
         background: "rgba(6,14,24,0.9)", backdropFilter: "blur(20px)",
         position: "sticky", top: 0, zIndex: 100,
       }}>
-        <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 24px", height: 64, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{
+        <div className="header-inner">
+          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+            <img src={logoUrl} alt="CityVoice Logo" style={{
               width: 36, height: 36, borderRadius: 10,
-              background: "linear-gradient(135deg, #34c778, #1a9e56)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 18, flexShrink: 0,
-            }}>🏙️</div>
+              objectFit: "cover", flexShrink: 0,
+            }} />
             <div>
               <div style={{ fontFamily: "'Syne',sans-serif", fontWeight: 900, fontSize: 16, letterSpacing: "-0.3px", lineHeight: 1 }}>CityVoice</div>
-              <div style={{ fontSize: 10, color: "#4a6278", fontWeight: 500, letterSpacing: "0.5px" }}>URBAN PLANNING PLATFORM</div>
+              <div className="header-subtitle" style={{ fontSize: 10, color: "#4a6278", fontWeight: 500, letterSpacing: "0.5px" }}>URBAN PLANNING PLATFORM</div>
             </div>
           </div>
 
           <nav style={{ display: "flex", gap: 4, background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: 4 }}>
-            {[["board","Board"],["dashboard","Dashboard"]].map(([v, l]) => (
+            {[["board", "Board"], ["dashboard", "Dashboard"]].map(([v, l]) => (
               <button key={v} onClick={() => setView(v)} style={{
-                padding: "6px 16px", borderRadius: 7, border: "none",
+                padding: "6px 14px", borderRadius: 7, border: "none",
                 background: view === v ? "rgba(52,199,120,0.15)" : "transparent",
                 color: view === v ? "#34c778" : "#5a7285",
                 cursor: "pointer", fontSize: 13, fontWeight: view === v ? 700 : 500,
-                transition: "all 0.2s",
+                transition: "all 0.2s", whiteSpace: "nowrap",
               }}>{l}</button>
             ))}
           </nav>
 
-          <button onClick={() => setShowForm(true)} style={{
-            display: "flex", alignItems: "center", gap: 8,
+          <button className="header-submit-btn" onClick={() => setShowForm(true)} style={{
+            alignItems: "center", gap: 6,
             background: "linear-gradient(135deg, #34c778, #1a9e56)",
-            border: "none", color: "#fff", padding: "9px 20px", borderRadius: 10,
+            border: "none", color: "#fff", padding: "9px 16px", borderRadius: 10,
             cursor: "pointer", fontFamily: "'Syne',sans-serif",
             fontSize: 13, fontWeight: 800, letterSpacing: "0.3px",
             boxShadow: "0 4px 16px rgba(52,199,120,0.25)",
-            transition: "transform 0.2s, box-shadow 0.2s",
+            transition: "transform 0.2s, box-shadow 0.2s", flexShrink: 0,
           }}
             onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(52,199,120,0.35)"; }}
             onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 4px 16px rgba(52,199,120,0.25)"; }}
           >
-            <span style={{ fontSize: 16 }}>+</span> Submit
+            <span style={{ fontSize: 16 }}>+</span> <span className="submit-btn-label">Submit</span>
           </button>
         </div>
       </header>
 
-      <main style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
+      {/* MOBILE FLOATING ACTION BUTTON */}
+      <button className="mobile-fab" onClick={() => setShowForm(true)} style={{
+        position: "fixed", bottom: 24, right: 20, zIndex: 99,
+        width: 56, height: 56, borderRadius: "50%",
+        background: "linear-gradient(135deg, #34c778, #1a9e56)",
+        border: "none", color: "#fff",
+        alignItems: "center", justifyContent: "center",
+        cursor: "pointer", fontSize: 28, fontWeight: 300,
+        boxShadow: "0 6px 24px rgba(52,199,120,0.35)",
+        animation: "fabPulse 3s ease-in-out infinite",
+      }}>
+        +
+      </button>
+
+      <main className="main-padding">
 
         {/* ── BOARD VIEW ── */}
         {view === "board" && (
@@ -537,7 +600,7 @@ export default function App() {
             {ideas.length > 0 && <StatsBar ideas={ideas} />}
 
             {/* Filters */}
-            <div style={{
+            <div className="filters-bar" style={{
               display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20,
               background: "rgba(20,32,48,0.6)", borderRadius: 14, padding: 12,
               border: "1px solid rgba(255,255,255,0.06)",
@@ -551,27 +614,15 @@ export default function App() {
                   flex: "1 1 180px", minWidth: 0,
                 }}
               />
-              <select value={filter.type} onChange={e => setFilter(f => ({ ...f, type: e.target.value }))} style={{
-                background: "rgba(10,20,32,0.8)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 8, padding: "8px 12px", color: "#eef2f7",
-                fontFamily: "'DM Sans',sans-serif", fontSize: 13, outline: "none", cursor: "pointer",
-              }}>
+              <select className="filter-select" value={filter.type} onChange={e => setFilter(f => ({ ...f, type: e.target.value }))}>
                 <option value="all">All Types</option>
                 {TYPES.map(t => <option key={t.id} value={t.id}>{t.icon} {t.label}s</option>)}
               </select>
-              <select value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))} style={{
-                background: "rgba(10,20,32,0.8)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 8, padding: "8px 12px", color: "#eef2f7",
-                fontFamily: "'DM Sans',sans-serif", fontSize: 13, outline: "none", cursor: "pointer",
-              }}>
+              <select className="filter-select" value={filter.category} onChange={e => setFilter(f => ({ ...f, category: e.target.value }))}>
                 <option value="all">All Categories</option>
                 {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.icon} {c.label}</option>)}
               </select>
-              <select value={filter.sort} onChange={e => setFilter(f => ({ ...f, sort: e.target.value }))} style={{
-                background: "rgba(10,20,32,0.8)", border: "1px solid rgba(255,255,255,0.08)",
-                borderRadius: 8, padding: "8px 12px", color: "#eef2f7",
-                fontFamily: "'DM Sans',sans-serif", fontSize: 13, outline: "none", cursor: "pointer",
-              }}>
+              <select className="filter-select" value={filter.sort} onChange={e => setFilter(f => ({ ...f, sort: e.target.value }))}>
                 <option value="votes">↑ Top Voted</option>
                 <option value="new">🕒 Newest</option>
               </select>
@@ -632,7 +683,7 @@ export default function App() {
                 <StatsBar ideas={ideas} />
 
                 {/* Two columns */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div className="dashboard-grid">
 
                   {/* Top voted */}
                   <div style={{
@@ -653,7 +704,7 @@ export default function App() {
                             fontFamily: "'Syne',sans-serif", fontWeight: 900,
                             fontSize: 22, color: i === 0 ? "#f4d03f" : i === 1 ? "#bdc3c7" : i === 2 ? "#cd7f32" : "#3a5168",
                             minWidth: 32, lineHeight: 1,
-                          }}>#{i+1}</span>
+                          }}>#{i + 1}</span>
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <p style={{ fontSize: 13, fontWeight: 600, color: "#eef2f7", marginBottom: 4, lineHeight: 1.3 }}>{idea.title}</p>
                             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -705,7 +756,7 @@ export default function App() {
                     <h3 style={{ fontFamily: "'Syne',sans-serif", fontSize: 16, color: "#eef2f7" }}>📋 All Submissions</h3>
                     <button onClick={() => {
                       const csv = ["Title,Type,Category,Neighborhood,Votes,Submitted By,Date",
-                        ...ideas.map(i => `"${i.title}",${i.type},${i.category},"${i.neighborhood||''}",${i.votes},"${i.name||''}","${new Date(i.timestamp).toLocaleDateString()}"`)
+                        ...ideas.map(i => `"${i.title}",${i.type},${i.category},"${i.neighborhood || ''}",${i.votes},"${i.name || ''}","${new Date(i.timestamp).toLocaleDateString()}"`)
                       ].join("\n");
                       const blob = new Blob([csv], { type: "text/csv" });
                       const a = document.createElement("a");
@@ -719,15 +770,14 @@ export default function App() {
                     }}>⬇ Export CSV</button>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                    {[...ideas].sort((a,b) => b.votes - a.votes).map(idea => (
-                      <div key={idea.id} style={{
-                        display: "flex", gap: 12, alignItems: "center",
+                    {[...ideas].sort((a, b) => b.votes - a.votes).map(idea => (
+                      <div key={idea.id} className="export-row" style={{
                         background: "rgba(10,20,32,0.5)", borderRadius: 10, padding: "10px 14px",
-                        fontSize: 13,
+                        fontSize: 13, flexWrap: "wrap",
                       }}>
                         <TypeBadge type={idea.type} />
                         <span style={{ flex: 1, color: "#eef2f7", fontWeight: 500, minWidth: 0 }}>{idea.title}</span>
-                        <CategoryTag catId={idea.category} />
+                        <span className="export-cat-tag"><CategoryTag catId={idea.category} /></span>
                         <span style={{ color: "#34c778", fontWeight: 800, fontSize: 13, minWidth: 32, textAlign: "right" }}>▲{idea.votes}</span>
                       </div>
                     ))}
