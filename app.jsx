@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { collection, getDocs, addDoc, doc, updateDoc, increment, query, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
-import logoUrl from "./CityVoice logo.png";
+import logoUrl from "./logo.png";
 
 const CATEGORIES = [
   { id: "transport", label: "Transportation", icon: "🚌" },
