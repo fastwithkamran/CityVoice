@@ -2,7 +2,7 @@
 
 **Your City, Your Voice.**
 
-### 🌐 [Live Demo](https://cityvoice-two.vercel.app/)
+### 🌐 [Live Demo](https://cityvoice-fastwithkamran.vercel.app)
 
 CityVoice is a modern, real-time platform designed to bridge the gap between citizens and urban planners. It empowers residents to actively participate in the development of their neighborhoods by sharing feedback, proposing ideas, and prioritizing urban projects through a democratic voting system.
 
